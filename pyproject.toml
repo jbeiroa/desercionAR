@@ -1,9 +1,10 @@
 [tool.poetry]
-name = "desercion_escolar_argentina"
-version = "0.1.0"
+name = "desercionAR"
+version = "0.1.1"
 description = ""
-authors = ["laucouget <lautaro.couget@kenility.com>"]
+authors = ["jbeiroa <jbeiroa@gmail.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
