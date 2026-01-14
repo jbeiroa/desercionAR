@@ -1,19 +1,19 @@
 import pandas as pd
 import numpy as np
-from src.data import preprocessing as pr
-from src.data import cleaning as l
+from ..data import preprocessing as pr
+from ..data import cleaning as l
 
 
 def generate_auxiliary_dataframes(data: pd.DataFrame, households: pd.DataFrame):
     household_heads = data[data.CH03 == 1]
     spouses = data[data.CH03 == 2]
     # households by head's occupation status
-    _household_heads = pd.merge(household_heads, households[l.cols_id_hogar], how='left')
-    households_heads_df = pd.DataFrame(_household_heads.groupby(l.cols_id_hogar)[[
+    _household_heads = pd.merge(household_heads, households[pr.id_house_features], how='left')
+    households_heads_df = pd.DataFrame(_household_heads.groupby(pr.id_house_features)[[
         'CH04', 'CH06', 'ESTADO', 'NIVEL_ED', 'PP02E', 'CAT_OCUP', 'PP07I', 'PP07H', 'PP04B1']].sum()).reset_index()
     # non-single-parent households by gender and occupation of the spouse
-    _spouses = pd.merge(spouses, households[l.cols_id_hogar], how='left')
-    households_spouses_df = pd.DataFrame(_spouses.groupby(l.cols_id_hogar)[[
+    _spouses = pd.merge(spouses, households[pr.id_house_features], how='left')
+    households_spouses_df = pd.DataFrame(_spouses.groupby(pr.id_house_features)[[
         'CH04', 'ESTADO']].sum()).reset_index()
     return households_heads_df, households_spouses_df
 
@@ -21,6 +21,16 @@ def generate_auxiliary_dataframes(data: pd.DataFrame, households: pd.DataFrame):
 def join_heads_spouses(data: pd.DataFrame,
                         households_heads_df: pd.DataFrame,
                         households_spouses_df: pd.DataFrame):
+    """Joins household heads and spouses data with individual records.
+    
+    Args:
+        data (pd.DataFrame): Individual data to join with.
+        households_heads_df (pd.DataFrame): Aggregated household heads data.
+        households_spouses_df (pd.DataFrame): Aggregated spouses data.
+    
+    Returns:
+        pd.DataFrame: Joined DataFrame with household heads and spouses information.
+    """
     _data = pr.join_individuals_households(data,
                                      households_heads_df,
                                      suffixes=('', '_jefx'))
@@ -28,7 +38,7 @@ def join_heads_spouses(data: pd.DataFrame,
                                            households_spouses_df,
                                            how='outer',
                                            suffixes=('', '_conyuge'))
-    students.fillna(0)
+    students = students.fillna(0)
     return students
 
 
@@ -87,14 +97,21 @@ def generate_nbi_zona_vulnerable(data: pd.DataFrame):
 
 
 def generate_nbi_dificultad_laboral(data: pd.DataFrame):
+    """Generates binary feature for labor difficulty NBI.
+    
+    Args:
+        data (pd.DataFrame): Individual data.
+    
+    Returns:
+        pd.DataFrame: Data with NBI_DIFLABORAL column.
+    """
     male_condition = ((data.CH06_jefx.between(16, 64)) & (data.CH04_jefx == 1)) & (
         (data.ESTADO_jefx == 2) | (data.PP02E_jefx.isin([3, 5])))
     female_condition = ((data.CH06_jefx.between(16, 59)) & (data.CH04_jefx == 2)) & (
         (data.ESTADO_jefx == 2) | (data.PP02E_jefx.isin([3, 5])))
-    data.loc[:, 'NBI_DIFLABORAL'] = np.nan
+    data['NBI_DIFLABORAL'] = 0.0
     data.loc[male_condition, 'NBI_DIFLABORAL'] = 1
     data.loc[female_condition, 'NBI_DIFLABORAL'] = 1
-    data.loc[:, 'NBI_DIFLABORAL'].fillna(0, inplace=True)
     return data
 
 
@@ -106,16 +123,29 @@ def generate_nbi_trabajo_precario(data: pd.DataFrame):
     return students
 
 
-def generate_ratio_occupied_members(data: pd.DataFrame,
+def generate_ratio_ocupados(data: pd.DataFrame,
                                     individuals: pd.DataFrame,
                                     households: pd.DataFrame):
+    """Generates ratio of occupied household members.
+    
+    Calculates the ratio of employed individuals to total household members
+    for each household.
+    
+    Args:
+        data (pd.DataFrame): Individual data with household information.
+        individuals (pd.DataFrame): Individual-level data.
+        households (pd.DataFrame): Household-level data.
+    
+    Returns:
+        pd.DataFrame: Data with added ratio_ocupados column.
+    """
     occupied_per_household = individuals[individuals.ESTADO == 1].groupby(['CODUSU', 'NRO_HOGAR'])['ESTADO'].sum().reset_index()
     occupied_per_household.rename({'ESTADO': 'nro_ocupados'}, axis=1, inplace=True)
     occupied = pd.merge(households, occupied_per_household)
     occupied.loc[:, 'ratio_ocupados'] = occupied.nro_ocupados / occupied.IX_TOT
-    cols = l.cols_id_hogar + ['ratio_ocupados']
+    cols = pr.id_house_features + ['ratio_ocupados']
     students = pd.merge(data, occupied[cols], how='left')
-    students.ratio_ocupados.fillna(0, inplace=True)
+    students.loc[:, 'ratio_ocupados'] = students['ratio_ocupados'].fillna(0)
     return students
 
 
