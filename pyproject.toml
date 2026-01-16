@@ -25,6 +25,7 @@ pyyaml = "^6.0.1"
 pylint = "^4.0.4"
 types-requests = "^2.32.4.20260107"
 pandas-stubs = "^2.3.3.260113"
+black = "^24.4.2"
 
 [build-system]
 requires = ["poetry-core"]
