@@ -57,7 +57,6 @@ def join_heads_spouses(
     students = pr.join_individuals_households(
         _data, households_spouses_df, how="outer", suffixes=("", "_conyuge")
     )
-    students = students.fillna(0)
     return students
 
 

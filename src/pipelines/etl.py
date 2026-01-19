@@ -251,7 +251,7 @@ class ETLPipeline:
             "IV8", "IX_MAYEQ10", "CAT_OCUP", "CAT_INAC", "T_VI", "V2_M",
             "IV10", "II7", "IV12_1", "IV12_3", "PP07I", "CH04_jefx",
             "CAT_OCUP_jefx", "PP02E_jefx", "PP07H", "H15",
-            "ITF", "REALIZADA",
+            "ITF", "REALIZADA", "REALIZADA_jefx"
         ]
         binary_columns = [
             "CH11", "PP02H", "PP04B1", "IV5", "IV12_2", "II3", "II4_1",
@@ -372,9 +372,9 @@ if __name__ == "__main__":
 
     config_dict = {
         "pipeline": {
-            "years": [2020, 2021],
-            "quarters": [1, 2, 3, 4],
-            "output_dir": "data/processed",
+            "years": [2021, 2022],
+            "quarters": [2, 3, 4],
+            "output_dir": "data/processed/v0.2.0/",
             "transformations": [
                 {"function": "generate_conyuge_trabaja"},
                 {"function": "generate_jefa_mujer"},
