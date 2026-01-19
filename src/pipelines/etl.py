@@ -8,6 +8,7 @@ YAML configuration files.
 import os
 import numpy as np
 import pandas as pd
+from typing import List, Optional
 from ..data import file_handler as fh
 from ..data import cleaning as l
 from ..data import preprocessing as pr
@@ -29,7 +30,7 @@ class ETLPipeline:
         household_data (list): List of selected household feature DataFrames.
     """
 
-    def __init__(self, config_path: str):
+    def __init__(self, config_path: str = "configs/etl_pipeline.yaml"):
         """Initializes the ETL pipeline.
 
         Args:
@@ -76,7 +77,7 @@ class ETLPipeline:
             )
         ]
 
-    def extract(self):
+    def extract(self, years: Optional[List[int]] = None, quarters: Optional[List[int]] = None):
         """Extracts raw EPH data from INDEC or local cache.
 
         Downloads individual and household databases for the years and quarters
@@ -84,8 +85,8 @@ class ETLPipeline:
         individual and household data on common identifiers.
         """
         pipeline_config = self.config.get("pipeline", {})
-        years = pipeline_config.get("years", [])
-        quarters = pipeline_config.get("quarters", [])
+        years = years or pipeline_config.get("years", [])
+        quarters = quarters or pipeline_config.get("quarters", [])
 
         individual_base_dfs, household_base_dfs = self._get_raw_data(years, quarters)
         self.data = self._select_and_join_features(
@@ -299,7 +300,7 @@ class ETLPipeline:
             result_df = result_df.drop("_merge", axis=1)
         return result_df
 
-    def load(self):
+    def load(self, dataset_type: str = "all"):
         """
         Generates the dropout target variable, preprocesses the data, splits it into
         train, test, and predict sets, and saves them to CSV files.
@@ -322,89 +323,61 @@ class ETLPipeline:
         individual_training_sources = self.individual_data[1:]
 
         # 2. Generate target variable only for the training/testing data
-        labeled_data_list = [
-            self._generate_dropout_target(base, base_p1)
-            for base, base_p1 in zip(training_sources, individual_training_sources)
-        ]
-
-        # 3. Post-process both labeled and prediction dataframes
-        labeled_df = self._postprocess_data(labeled_data_list, train_test=True)
-        predict_df = self._postprocess_data([predict_source_df], train_test=False)
+        if dataset_type in ["all", "train-test"]:
+            labeled_data_list = [
+                self._generate_dropout_target(base, base_p1)
+                for base, base_p1 in zip(training_sources, individual_training_sources)
+            ]
+            labeled_df = self._postprocess_data(labeled_data_list, train_test=True)
+        
+        if dataset_type in ["all", "predict"]:
+            predict_df = self._postprocess_data([predict_source_df], train_test=False)
 
         # 4. Remove individuals from labeled_df that are in the prediction set
-        labeled_df = self._remove_duplicates([labeled_df, predict_df])
+        if dataset_type == "all":
+            labeled_df = self._remove_duplicates([labeled_df, predict_df])
 
         # 5. Create a time-series column to split chronologically
-        labeled_df = self._create_datetime_column(labeled_df)
+        if dataset_type in ["all", "train-test"]:
+            labeled_df = self._create_datetime_column(labeled_df)
 
-        # 6. Split labeled data into train and test sets based on time
-        if not labeled_df.empty:
-            test_period = labeled_df["period"].max()
-            test_df = labeled_df[labeled_df["period"] == test_period].copy()
-            train_df = labeled_df[labeled_df["period"] < test_period].copy()
-        else:
-            test_df = pd.DataFrame(columns=labeled_df.columns)
-            train_df = pd.DataFrame(columns=labeled_df.columns)
+            # 6. Split labeled data into train and test sets based on time
+            if not labeled_df.empty:
+                test_period = labeled_df["period"].max()
+                test_df = labeled_df[labeled_df["period"] == test_period].copy()
+                train_df = labeled_df[labeled_df["period"] < test_period].copy()
+            else:
+                test_df = pd.DataFrame(columns=labeled_df.columns)
+                train_df = pd.DataFrame(columns=labeled_df.columns)
 
-        # 7. Drop the temporary period column
-        for df in [train_df, test_df, predict_df]:
-            if "period" in df.columns:
-                df.drop(columns=["period"], inplace=True)
+            # 7. Drop the temporary period column
+            for df in [train_df, test_df]:
+                if "period" in df.columns:
+                    df.drop(columns=["period"], inplace=True)
+            
+            # 8. Save the final datasets
+            train_df.to_csv(train_path, index=False)
+            test_df.to_csv(test_path, index=False)
 
-        # 8. Save the final datasets
-        train_df.to_csv(train_path, index=False)
-        test_df.to_csv(test_path, index=False)
-        predict_df.to_csv(predict_path, index=False)
+        if dataset_type == "predict":
+            if "period" in predict_df.columns:
+                predict_df.drop(columns=["period"], inplace=True)
+            predict_df.to_csv(predict_path, index=False)
+        
+        if dataset_type == "all":
+             if "period" in predict_df.columns:
+                predict_df.drop(columns=["period"], inplace=True)
+             predict_df.to_csv(predict_path, index=False)
 
-    def run(self):
+
+    def run(self, years: Optional[List[int]] = None, quarters: Optional[List[int]] = None, dataset_type: str = "all"):
         """Executes the complete ETL pipeline.
 
         Runs the extract, transform, and load steps in sequence.
         """
-        self.extract()
+        print("Extracting data...")
+        self.extract(years, quarters)
+        print("Transforming data...")
         self.transform()
-        self.load()
-
-
-if __name__ == "__main__":
-    import tempfile
-    import yaml
-
-    config_dict = {
-        "pipeline": {
-            "years": [2021, 2022],
-            "quarters": [2, 3, 4],
-            "output_dir": "data/processed/v0.2.0/",
-            "transformations": [
-                {"function": "generate_conyuge_trabaja"},
-                {"function": "generate_jefa_mujer"},
-                {"function": "generate_hogar_monop"},
-                {"function": "generate_ratio_ocupados"},
-                {"function": "generate_nbi_cobertura_previsional"},
-                {"function": "generate_nbi_dificultad_laboral"},
-                {"function": "generate_nbi_hacinamiento"},
-                {"function": "generate_nbi_sanitaria"},
-                {"function": "generate_nbi_tenencia"},
-                {"function": "generate_nbi_trabajo_precario"},
-                {"function": "generate_nbi_vivienda_precaria"},
-                {"function": "generate_nbi_zona_vulnerable"},
-            ],
-        }
-    }
-
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
-        yaml.dump(config_dict, f)
-        temp_config_path = f.name
-
-    try:
-        pipeline = ETLPipeline(temp_config_path)
-        print(
-            "Running ETL pipeline with years [2020, 2021] and quarters [1, 2, 3, 4]..."
-        )
-        pipeline.run()
-        print("ETL pipeline completed successfully!")
-    except Exception as e:
-        print(f"Error running ETL pipeline: {e}")
-    finally:
-        if os.path.exists(temp_config_path):
-            os.remove(temp_config_path)
+        print("Loading data...")
+        self.load(dataset_type)

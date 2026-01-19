@@ -4,12 +4,10 @@ pipeline:
   output_dir: "data/processed"
   output_filename: "train.csv"
   transformations:
-    - function: generate_jefe_trabaja
     - function: generate_conyuge_trabaja
     - function: generate_jefa_mujer
     - function: generate_hogar_monop
     - function: generate_ratio_ocupados
-    - function: generate_nbi_subsistencia
     - function: generate_nbi_cobertura_previsional
     - function: generate_nbi_dificultad_laboral
     - function: generate_nbi_hacinamiento
