@@ -1,7 +1,7 @@
 pipeline:
   years: [2022, 2023]
   quarters: [1, 2]
-  output_dir: "data/desercionAR/processed"
+  output_dir: "data/desercionAR"
   transformations:
     - function: generate_conyuge_trabaja
     - function: generate_jefa_mujer
