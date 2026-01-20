@@ -251,7 +251,7 @@ class ETLPipeline:
         drop_cols = [
             "IV8", "IX_MAYEQ10", "CAT_OCUP", "CAT_INAC", "T_VI", "V2_M",
             "IV10", "II7", "IV12_1", "IV12_3", "PP07I", "CH04_jefx",
-            "CAT_OCUP_jefx", "PP02E_jefx", "PP07H", "H15",
+            "CAT_OCUP_jefx", "PP02E_jefx", "PP07H", "H15", "CH10", "MAS_500",
             "ITF", "REALIZADA", "REALIZADA_jefx", 'REALIZADA_conyuge'
         ]
         binary_columns = [
