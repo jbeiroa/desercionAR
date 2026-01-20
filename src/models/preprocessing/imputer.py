@@ -1,10 +1,6 @@
-import os
-
 import pandas as pd
 from sklearn.impute import KNNImputer
 from sklearn.compose import make_column_transformer
-
-from desercion_escolar_argentina.utils import file_handler as fh
 
 cols9 = ['CH07', 'CH08', 'CH11', 'V1', 
         'V2', 'V3', 'V5', 'V6', 'V7', 'V8', 'V11', 'V12', 
@@ -14,7 +10,19 @@ cols99 = ['IV2', 'II1']
 
 col12 = ['DECCFR']
 
-def make_imputer(c9 = None, c99 = None, c12 = None):
+def make_imputer(c9: list[str] | None = None, 
+                 c99: list[str] | None = None, 
+                 c12: list[str] | None = None):
+    """Makes an imputer for columns with specific missing value codes.
+
+    Args:
+        c9 (list, optional): List of columns with missing values coded as 9. Defaults to None.
+        c99 (list, optional): List of columns with missing values coded as 99. Defaults to None.
+        c12 (list, optional): List of columns with missing values coded as 12. Defaults to None.
+
+    Returns:
+        sklearn.compose.ColumnTransformer: A KNN imputer transformer.
+    """
     if c9 is None:
         c9 = cols9
     if c99 is None:
@@ -31,14 +39,11 @@ def make_imputer(c9 = None, c99 = None, c12 = None):
     return knnimputer.set_output(transform='pandas')
 
 if __name__ == "__main__":
-    repo_path = fh.get_repo_path()
-    data_path = os.path.join(repo_path, 'data', 'preprocessed',
-                             'preprocessed_train.csv')
+    data_path = '~/Code/data/desercionAR/train.csv'
     data = pd.read_csv(data_path)
     imputer = make_imputer(cols9, cols99, col12)
     imputer.fit_transform(data)
     imputed = pd.DataFrame(imputer.fit_transform(data), 
                            columns=imputer.get_feature_names_out()).round(0)
-    save_path = os.path.join(repo_path, 'data', 'preprocessed',
-                             'preprocessed_train_imputed.csv')
+    save_path = '~/Code/data/desercionAR/train_imputed.csv'
     imputed.to_csv(save_path, index=False)
