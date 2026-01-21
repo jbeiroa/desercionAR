@@ -169,3 +169,11 @@ Regiones.geojson:Zone.Identifier
 .gemini
 
 data/
+
+# MLflow
+mlruns/
+mlartifacts/
+outputs/
+mlflow.db
+*-shm
+*-wal
