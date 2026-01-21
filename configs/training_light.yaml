@@ -1,7 +1,12 @@
 # File: configs/training_light.yaml
 
-# Path to the training data. The '~' will be expanded to your home directory.
-train_data_path: "~/Code/data/desercionAR/train.csv"
+mlflow:
+  tracking_uri: "file:./mlruns"
+  experiment_name: "Light Training desercionAR"
+
+data:
+  train_path: "~/Code/data/desercionAR/train.csv"
+  test_path: "~/Code/data/desercionAR/test.csv"
 
 # Preprocessor step names and the registry keys for their functions.
 # The pipeline will be built sequentially in this order.
