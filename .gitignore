@@ -168,8 +168,6 @@ Regiones.geojson:Zone.Identifier
 
 .gemini
 
-data/
-
 # MLflow
 mlruns/
 mlartifacts/
