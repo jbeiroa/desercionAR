@@ -1,0 +1,31 @@
+# File: configs/training_light.yaml
+
+mlflow:
+  tracking_uri: "file:./mlruns"
+  experiment_name: "Light Training desercionAR"
+
+data:
+  train_path: "~/Code/data/desercionAR/train.csv"
+  test_path: "~/Code/data/desercionAR/test.csv"
+
+# Preprocessor step names and the registry keys for their functions.
+# The pipeline will be built sequentially in this order.
+preprocessors:
+  imputer: "make_imputer"
+  scaler: "make_scaler"
+  encoder: "make_encoder"
+
+# A single model for a quick test run
+models:
+  - type: "logistic_regression"
+    base_params:
+      random_state: 42
+      solver: "liblinear"
+    hyperparams:
+      C: [0.1, 1.0, 10.0]
+      penalty: ["l1", "l2"]
+
+# Configuration for the GridSearchCV process
+training:
+  cv_folds: 3
+  scoring: "f1_macro"
