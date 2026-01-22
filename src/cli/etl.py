@@ -1,6 +1,7 @@
 """
 Command Line Interface for the ETL pipeline.
 """
+
 import typer
 from enum import Enum
 from typing import List, Optional
@@ -8,10 +9,12 @@ from src.pipelines.etl import ETLPipeline
 
 app = typer.Typer()
 
+
 class DatasetType(str, Enum):
     all = "all"
     train_test = "train-test"
     predict = "predict"
+
 
 @app.command()
 def etl(
@@ -42,6 +45,7 @@ def etl(
     except Exception as e:
         typer.echo(f"Error running ETL pipeline: {e}", err=True)
         raise typer.Exit(code=1)
+
 
 if __name__ == "__main__":
     app()

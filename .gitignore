@@ -166,8 +166,6 @@ Regiones.geojson:Zone.Identifier
 
 .DS_Store
 
-.gemini
-
 # MLflow
 mlruns/
 mlartifacts/

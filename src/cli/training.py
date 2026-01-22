@@ -1,6 +1,7 @@
 """
 Command Line Interface for the Training pipeline.
 """
+
 import typer
 import yaml
 import os
@@ -8,6 +9,7 @@ from typing import Optional
 from src.pipelines.training import TrainingPipeline
 
 app = typer.Typer()
+
 
 @app.command()
 def training(
@@ -39,6 +41,7 @@ def training(
     except Exception as e:
         typer.echo(f"Error running Training pipeline: {e}", err=True)
         raise typer.Exit(code=1)
+
 
 if __name__ == "__main__":
     app()
