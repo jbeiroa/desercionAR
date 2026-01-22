@@ -5,6 +5,7 @@ Argentine household survey data, preprocesses it, applies feature engineering
 transformations, and exports the final dataset. The pipeline is configurable via
 YAML configuration files.
 """
+
 import os
 from typing import List, Optional
 import numpy as np
@@ -39,7 +40,7 @@ class ETLPipeline:
         self.config = load_config(config_path)
         self.data: list[pd.DataFrame] = []
         self.individual_data: list[pd.DataFrame] | None = None
-        self.household_data: list[pd.DataFrame] | None= None
+        self.household_data: list[pd.DataFrame] | None = None
 
     def _get_raw_data(
         self, years: list[int], quarters: list[int]
@@ -77,7 +78,9 @@ class ETLPipeline:
             )
         ]
 
-    def extract(self, years: Optional[List[int]] = None, quarters: Optional[List[int]] = None):
+    def extract(
+        self, years: Optional[List[int]] = None, quarters: Optional[List[int]] = None
+    ):
         """Extracts raw EPH data from INDEC or local cache.
 
         Downloads individual and household databases for the years and quarters
@@ -144,6 +147,7 @@ class ETLPipeline:
         ]
 
         self.data = transformed_data
+
     def _generate_dropout_target(
         self, data_t: pd.DataFrame, individuals_tp1: pd.DataFrame
     ) -> pd.DataFrame:
@@ -163,7 +167,9 @@ class ETLPipeline:
     def _homogenize_binary_columns(
         self, df: pd.DataFrame, columns: list[str]
     ) -> pd.DataFrame:
-        replace_dict = {col: {2: 0, "S": 1, "SI": 1, "N": 0, "NO": 0} for col in columns}
+        replace_dict = {
+            col: {2: 0, "S": 1, "SI": 1, "N": 0, "NO": 0} for col in columns
+        }
         data = df.replace(replace_dict)
         data[columns] = data[columns].astype("float64", copy=False)
         return data
@@ -173,37 +179,144 @@ class ETLPipeline:
     ) -> pd.DataFrame:
         agglomeration_coords = {
             "eph_codagl": [
-                13, 29, 31, 25, 34, 7, 26, 15, 4, 91, 18, 23, 30, 12, 20, 93, 8,
-                14, 6, 5, 3, 9, 22, 36, 38, 38, 10, 19, 2, 32, 17, 33, 27],
+                13,
+                29,
+                31,
+                25,
+                34,
+                7,
+                26,
+                15,
+                4,
+                91,
+                18,
+                23,
+                30,
+                12,
+                20,
+                93,
+                8,
+                14,
+                6,
+                5,
+                3,
+                9,
+                22,
+                36,
+                38,
+                38,
+                10,
+                19,
+                2,
+                32,
+                17,
+                33,
+                27,
+            ],
             "eph_aglome": [
-                "Gran Córdoba", "Gran Tucumán - Tafi Viejo", "Ushuaia - Rio Grande",
-                "La Rioja", "Mar del Plata - Batán", "Posadas", "San Luis - El Chorrillo",
-                "Formosa", "Gran Rosario", "Rawson - Trelew", "Santiago del Estero - La Banda",
-                "Salta", "Santa Rosa - Toay", "Corrientes", "Rio Gallegos",
-                "Viedma - Carmen de Patagones", "Gran Resistencia", "Concordia",
-                "Gran Paraná", "Gran Santa Fe", "Bahia Blanca - Cerri",
-                "Comodoro Rivadavia - Rada Tilly", "Gran Catamarca", "Rio Cuarto",
-                "San Nicolas - Villa Constitiución", "San Nicolas - Villa Constitiución",
-                "Gran Mendoza", "Jujuy - Palpalá", "Gran La Plata", "CABA",
-                "Neuquén - Plottier", "Partidos del GBA", "Gran San Juan"
+                "Gran Córdoba",
+                "Gran Tucumán - Tafi Viejo",
+                "Ushuaia - Rio Grande",
+                "La Rioja",
+                "Mar del Plata - Batán",
+                "Posadas",
+                "San Luis - El Chorrillo",
+                "Formosa",
+                "Gran Rosario",
+                "Rawson - Trelew",
+                "Santiago del Estero - La Banda",
+                "Salta",
+                "Santa Rosa - Toay",
+                "Corrientes",
+                "Rio Gallegos",
+                "Viedma - Carmen de Patagones",
+                "Gran Resistencia",
+                "Concordia",
+                "Gran Paraná",
+                "Gran Santa Fe",
+                "Bahia Blanca - Cerri",
+                "Comodoro Rivadavia - Rada Tilly",
+                "Gran Catamarca",
+                "Rio Cuarto",
+                "San Nicolas - Villa Constitiución",
+                "San Nicolas - Villa Constitiución",
+                "Gran Mendoza",
+                "Jujuy - Palpalá",
+                "Gran La Plata",
+                "CABA",
+                "Neuquén - Plottier",
+                "Partidos del GBA",
+                "Gran San Juan",
             ],
             "x": [
-                3.668196e06, 3.575528e06, 3.368650e06, 3.433735e06, 4.238702e06,
-                4.500828e06, 3.470658e06, 4.290676e06, 3.989413e06, 3.561793e06,
-                3.671129e06, 3.558820e06, 3.652175e06, 4.215852e06, 3.274586e06,
-                3.754150e06, 4.194276e06, 4.258864e06, 4.023207e06, 4.008905e06,
-                3.824880e06, 3.382300e06, 3.520630e06, 3.656809e06, 4.035477e06,
-                4.029783e06, 3.231898e06, 3.560475e06, 4.234043e06, 4.193488e06,
-                3.310530e06, 4.180647e06, 3.260047e06
+                3.668196e06,
+                3.575528e06,
+                3.368650e06,
+                3.433735e06,
+                4.238702e06,
+                4.500828e06,
+                3.470658e06,
+                4.290676e06,
+                3.989413e06,
+                3.561793e06,
+                3.671129e06,
+                3.558820e06,
+                3.652175e06,
+                4.215852e06,
+                3.274586e06,
+                3.754150e06,
+                4.194276e06,
+                4.258864e06,
+                4.023207e06,
+                4.008905e06,
+                3.824880e06,
+                3.382300e06,
+                3.520630e06,
+                3.656809e06,
+                4.035477e06,
+                4.029783e06,
+                3.231898e06,
+                3.560475e06,
+                4.234043e06,
+                4.193488e06,
+                3.310530e06,
+                4.180647e06,
+                3.260047e06,
             ],
             "y": [
-                6.533650e06, 7.036009e06, 3.980855e06, 6.726538e06, 5.760505e06,
-                6.922012e06, 6.318389e06, 7.090830e06, 6.346344e06, 5.211965e06,
-                6.926946e06, 7.258796e06, 5.947417e06, 6.941437e06, 4.274342e06,
-                5.478764e06, 6.944114e06, 6.501289e06, 6.473109e06, 6.487715e06,
-                5.709612e06, 4.921987e06, 6.858955e06, 6.336869e06, 6.293741e06,
-                6.307894e06, 6.360832e06, 7.329096e06, 6.103368e06, 6.144082e06,
-                5.686581e06, 6.148549e06, 6.509854e06
+                6.533650e06,
+                7.036009e06,
+                3.980855e06,
+                6.726538e06,
+                5.760505e06,
+                6.922012e06,
+                6.318389e06,
+                7.090830e06,
+                6.346344e06,
+                5.211965e06,
+                6.926946e06,
+                7.258796e06,
+                5.947417e06,
+                6.941437e06,
+                4.274342e06,
+                5.478764e06,
+                6.944114e06,
+                6.501289e06,
+                6.473109e06,
+                6.487715e06,
+                5.709612e06,
+                4.921987e06,
+                6.858955e06,
+                6.336869e06,
+                6.293741e06,
+                6.307894e06,
+                6.360832e06,
+                7.329096e06,
+                6.103368e06,
+                6.144082e06,
+                5.686581e06,
+                6.148549e06,
+                6.509854e06,
             ],
         }
         agglomeration_coords_df = pd.DataFrame(agglomeration_coords)
@@ -249,20 +362,68 @@ class ETLPipeline:
             return pd.DataFrame()
 
         drop_cols = [
-            "IV8", "IX_MAYEQ10", "CAT_OCUP", "CAT_INAC", "T_VI", "V2_M",
-            "IV10", "II7", "IV12_1", "IV12_3", "PP07I", "CH04_jefx",
-            "CAT_OCUP_jefx", "PP02E_jefx", "PP07H", "H15", "CH10", "MAS_500",
-            "ITF", "REALIZADA", "REALIZADA_jefx", 'REALIZADA_conyuge'
+            "IV8",
+            "IX_MAYEQ10",
+            "CAT_OCUP",
+            "CAT_INAC",
+            "T_VI",
+            "V2_M",
+            "IV10",
+            "II7",
+            "IV12_1",
+            "IV12_3",
+            "PP07I",
+            "CH04_jefx",
+            "CAT_OCUP_jefx",
+            "PP02E_jefx",
+            "PP07H",
+            "H15",
+            "CH10",
+            "MAS_500",
+            "ITF",
+            "REALIZADA",
+            "REALIZADA_jefx",
+            "REALIZADA_conyuge",
         ]
         binary_columns = [
-            "CH11", "PP02H", "PP04B1", "IV5", "IV12_2", "II3", "II4_1",
-            "II4_2", "II4_3", "V1", "V2", "V21", "V22", "V3", "V5", "V6",
-            "V7", "V8", "V11", "V12", "V13", "V14", "PP07I_jefx",
-            "PP07H_jefx", "PP04B1_jefx", "CONYUGE_TRABAJA", "JEFA_MUJER",
-            "HOGAR_MONOP", "NBI_COBERTURA_PREVISIONAL", "NBI_DIFLABORAL",
-            "NBI_HACINAMIENTO", "NBI_SANITARIA", "NBI_TENENCIA",
-            "NBI_TRABAJO_PRECARIO", "NBI_VIVIENDA", "NBI_ZONA_VULNERABLE",
-            "MAS_500", "CH04",
+            "CH11",
+            "PP02H",
+            "PP04B1",
+            "IV5",
+            "IV12_2",
+            "II3",
+            "II4_1",
+            "II4_2",
+            "II4_3",
+            "V1",
+            "V2",
+            "V21",
+            "V22",
+            "V3",
+            "V5",
+            "V6",
+            "V7",
+            "V8",
+            "V11",
+            "V12",
+            "V13",
+            "V14",
+            "PP07I_jefx",
+            "PP07H_jefx",
+            "PP04B1_jefx",
+            "CONYUGE_TRABAJA",
+            "JEFA_MUJER",
+            "HOGAR_MONOP",
+            "NBI_COBERTURA_PREVISIONAL",
+            "NBI_DIFLABORAL",
+            "NBI_HACINAMIENTO",
+            "NBI_SANITARIA",
+            "NBI_TENENCIA",
+            "NBI_TRABAJO_PRECARIO",
+            "NBI_VIVIENDA",
+            "NBI_ZONA_VULNERABLE",
+            "MAS_500",
+            "CH04",
         ]
         if train_test:
             binary_columns.append("DESERTO")
@@ -329,7 +490,7 @@ class ETLPipeline:
                 for base, base_p1 in zip(training_sources, individual_training_sources)
             ]
             labeled_df = self._postprocess_data(labeled_data_list, train_test=True)
-        
+
         if dataset_type in ["all", "predict"]:
             predict_df = self._postprocess_data([predict_source_df], train_test=False)
 
@@ -354,7 +515,7 @@ class ETLPipeline:
             for df in [train_df, test_df]:
                 if "period" in df.columns:
                     df.drop(columns=["period"], inplace=True)
-            
+
             # 8. Save the final datasets
             train_df.to_csv(train_path, index=False)
             test_df.to_csv(test_path, index=False)
@@ -363,14 +524,18 @@ class ETLPipeline:
             if "period" in predict_df.columns:
                 predict_df.drop(columns=["period"], inplace=True)
             predict_df.to_csv(predict_path, index=False)
-        
+
         if dataset_type == "all":
-             if "period" in predict_df.columns:
+            if "period" in predict_df.columns:
                 predict_df.drop(columns=["period"], inplace=True)
-             predict_df.to_csv(predict_path, index=False)
+            predict_df.to_csv(predict_path, index=False)
 
-
-    def run(self, years: Optional[List[int]] = None, quarters: Optional[List[int]] = None, dataset_type: str = "all"):
+    def run(
+        self,
+        years: Optional[List[int]] = None,
+        quarters: Optional[List[int]] = None,
+        dataset_type: str = "all",
+    ):
         """Executes the complete ETL pipeline.
 
         Runs the extract, transform, and load steps in sequence.
