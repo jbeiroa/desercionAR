@@ -1,20 +1,13 @@
-import os
-
 import dash
 from dash import dcc, html, callback, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-import pyeph
-
-from desercion_escolar_argentina.utils import file_handler as fh
 
 dash.register_page(__name__)
 
-repo_path = fh.get_repo_path()
-
-file_path = os.path.join(repo_path, "data/preprocessed/preprocessed_train.csv")
+file_path = "~/Code/data/desercionAR/train.csv"
 data = pd.read_csv(file_path).fillna(0)
 
 d_var = {

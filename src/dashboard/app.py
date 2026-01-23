@@ -2,7 +2,9 @@ import dash
 from dash import Dash, html
 import dash_bootstrap_components as dbc
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+app = Dash(__name__, 
+           external_stylesheets=[dbc.themes.BOOTSTRAP],
+           use_pages=True)
 server = app.server
 
 app.layout = html.Div(
@@ -12,7 +14,7 @@ app.layout = html.Div(
                 dbc.NavLink(f"{page['name']}", href=page["relative_path"])
                 for page in dash.page_registry.values()
             ],
-            brand="Deserción Escolar Argentina",
+            brand="desercionAR",
             brand_href="/home",
             color="primary",
             dark=True,

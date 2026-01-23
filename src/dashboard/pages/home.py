@@ -1,23 +1,26 @@
+from pathlib import Path
 import os
-import pickle
+import mlflow
+from mlflow.exceptions import MlflowException
 
+import pandas as pd
+import json
 import dash
 from dash import dcc, html, callback, Input, Output
 import plotly.express as px
 import dash_bootstrap_components as dbc
-import pandas as pd
-import json
 
-from desercion_escolar_argentina.utils import file_handler as fh
-
-repo_path = fh.get_repo_path()
-regiones_file = os.path.join(repo_path, "Regiones.geojson")
-model_file = os.path.join(repo_path, "models/logistic_1932024.pkl")
+model_uri = "models:/dropout_predictor/latest"
+try:
+    model = mlflow.pyfunc.load_model(model_uri)
+except MlflowException as e:
+    print(f"Error loading model: {e}")
+    model = None
+regiones_file = os.path.join(Path(__file__).parent.parent, 
+                             "assets/Regiones.geojson")
 with open(regiones_file) as regs:
     regiones = json.load(regs)
-with open(model_file, "rb") as file:
-    model = pickle.load(file)
-pred_path = os.path.join(repo_path, "data/preprocessed/preprocessed_predict.csv")
+pred_path = "~/Code/data/desercionAR/predict.csv"
 data = pd.read_csv(pred_path)
 id_cols = [
     "CODUSU",
@@ -25,7 +28,6 @@ id_cols = [
     "COMPONENTE",
     "ANO4",
     "TRIMESTRE",
-    "PONDERA",
     "DESERTO",
 ]
 
