@@ -21,9 +21,10 @@ Predicting secondary school dropout in Argentina using the EPH (Encuesta Permane
 - **Modularity:** Move and restructure logic into `src/` directory:
   - `src/data/`: `pyeph` wrappers and loading logic.
   - `src/features/`: Feature engineering and survey-specific transformations.
-  - `src/models/`: Training loops and evaluation (scikit-learn/XGBoost/CatBoost).
+  - `src/models/`: Trainer and Evaluator classes (scikit-learn/XGBoost/CatBoost).
+  - `src/pipelines/`: ETL and training pipelines.
   - `src/interpret`: SHAP and/or explanibility logic (not implemented yet)
-  - `src/api/`: FastAPI for prediction (not implmented yet).
+  - `src/api/`: FastAPI for prediction (dummy implementation).
   - `src/dashboard/`: plotly app.
 - **Type Hinting:** All new Python functions must include type hints.
 - **Documentation:** Use Google-style docstrings for all classes and functions.
@@ -44,20 +45,20 @@ Predicting secondary school dropout in Argentina using the EPH (Encuesta Permane
 desercionAR/
 ├── src/
 │   ├── __init__.py
-│   ├── data/			# ETL: loading, cleaning, preprocessing
-│   ├── features/		# Feature engineering functions
-│   ├── models/			# Training, evaluation, saving, loading
-│   ├── interpret/		# SHAP or explainability logic
-│   ├── api/			# FastAPI endpoints for prediction
-│   └── dashboard/		# plotly app
-├── tests/				# Unit & integration tests
-├── notebooks/			# Experimental notebooks (dated)
-├── data/				# gitignored, upload train-test-val dataset to hf
+│   ├── data/			      # ETL: loading, cleaning, preprocessing
+│   ├── features/		    # Feature engineering functions
+│   ├── models/			    # Training, evaluation
+│   ├── interpret/		  # SHAP or explainability logic
+│   ├── api/			      # FastAPI endpoints for prediction
+│   ├── pipelines/			# ETL and training pipelines
+│   └── dashboard/		  # plotly app
+├── tests/				      # Unit & integration tests
+├── notebooks/			    # Experimental notebooks (dated)
+├── data/				        # gitignored, upload train-test-val dataset to hf
 │   ├── raw/
 │   ├── preprocessed/
 │   └── stage/
-├── models/			    # Versioned model artifacts
-├── artifacts/			# Logs, transformers, metrics, etc.
+├── artifacts/			    # Logs, transformers, metrics, etc.
 ├── figures/
 ├── docs/
 ├── pyproject.toml
@@ -119,6 +120,7 @@ The training pipeline (`src/pipelines/training.py`) orchestrates model training,
 
 # File: configs/training_light.yaml
 
+```yaml
 mlflow:
   tracking_uri: "file:./mlruns"
   experiment_name: "Light Training desercionAR"
@@ -157,3 +159,13 @@ python -m src.cli.training
 # Train with custom configuration
 python -m src.cli.training --config configs/training_light.yaml
 ```
+
+# 9. Dashboard
+
+Dashboard app uses `Plotly-Dash` with three pages:
+1. Home page showing a presentation message describing the project and a summary of the data.
+  - A map of Argentina divided by color-scaled regions with the number of dropouts. Selecting a region should filter plots to show data from that region only.
+  - Plots of some important features for the model.
+  - Data on model performance.
+2. An Analytics page that allow users to see data distribution for different variables of the dataset.
+3. A page that uses an entry form with some predefined values to get a singular prediction using the api.
