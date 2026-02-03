@@ -169,3 +169,81 @@ Dashboard app uses `Plotly-Dash` with three pages:
   - Data on model performance.
 2. An Analytics page that allow users to see data distribution for different variables of the dataset.
 3. A page that uses an entry form with some predefined values to get a singular prediction using the api.
+
+# 10. Development, Testing, and Deployment Plan
+
+This section outlines a comprehensive strategy for creating a robust test suite, implementing CI/CD pipelines, and deploying the application to AWS with a focus on cost-effectiveness.
+
+## 10.1. Testing Strategy (Pytest)
+
+A full test suite ensures code quality, prevents regressions, and validates the logic of data processing and modeling. We will use the `pytest` framework.
+
+1.  **Setup Test Environment:**
+    *   Create a `tests/` directory if it doesn't already exist.
+    *   Populate `tests/` with subdirectories mirroring the `src/` structure (e.g., `tests/data`, `tests/pipelines`, `tests/api`).
+    *   Create a `tests/fixtures/` directory to store sample data for tests. This data should be a small, representative subset of the EPH data, containing known values to assert against.
+
+2.  **Unit Tests:**
+    *   **`src/data`:** Write tests for data cleaning and preprocessing functions. Use fixture data to test edge cases, such as missing values or unexpected data types.
+    *   **`src/features`:** Test each feature engineering function in isolation. Ensure the output DataFrame has the correct schema and values based on a known input.
+    *   **`src/models/preprocessing`:** Test imputer, scaler, and encoder transformers to ensure they behave as expected.
+    *   **`src/api`:** Write unit tests for the FastAPI endpoints. Use `pytest-mock` to mock the model loading and prediction functions, testing only the API logic (request/response handling, status codes).
+
+3.  **Integration Tests:**
+    *   **`src/pipelines/etl.py`:** Write an integration test for the ETL pipeline. This test will run the pipeline on a small, controlled dataset (from `tests/fixtures/`) and assert that the output files (`train.csv`, `test.csv`, `predict.csv`) are created correctly and have the expected content.
+    *   **`src/pipelines/training.py`:** Write an integration test for the training pipeline. This will run the training process on the test fixture data, ensuring the pipeline executes end-to-end without errors and produces a model artifact.
+
+## 10.2. CI/CD Strategy (GitHub Actions)
+
+We will use GitHub Actions to automate testing and prepare for deployment. A workflow file will be created under `.github/workflows/ci.yml`.
+
+1.  **Continuous Integration (CI) Workflow:**
+    *   **Trigger:** The workflow will trigger on every `push` to the main branch and on every `pull_request`.
+    *   **Jobs:**
+        1.  **Lint & Type Check:**
+            *   Set up a Python environment and install dependencies using `poetry install`.
+            *   Run a linter like `ruff` or `flake8` to enforce code style.
+            *   Run `mypy` to perform static type checking.
+        2.  **Test:**
+            *   Set up a Python environment and install dependencies.
+            *   Run the entire `pytest` suite.
+            *   (Optional) Collect and upload test coverage reports.
+
+2.  **Continuous Deployment (CD) Workflow:**
+    *   **Trigger:** The workflow will trigger on a `push` to a specific branch (e.g., `release`) or manually via `workflow_dispatch`.
+    *   **Jobs:**
+        1.  **Build:**
+            *   Build a Docker container for the FastAPI application.
+            *   Build a Docker container for the Plotly Dash dashboard.
+        2.  **Push:**
+            *   Push the Docker images to a container registry (e.g., Amazon ECR).
+        3.  **Deploy:**
+            *   Use the AWS CLI to deploy the new container images to their respective services (e.g., AWS App Runner).
+
+## 10.3. AWS Deployment (Cost-Effective)
+
+The goal is a low-cost, scalable deployment. We will primarily use serverless and managed services.
+
+1.  **Data and Artifact Storage (Amazon S3):**
+    *   Create an S3 bucket to store:
+        *   Raw and processed data.
+        *   Trained model artifacts (`.pkl` files).
+        *   MLflow experiment logs (can be configured to use S3 as a backend).
+    *   Update the ETL and Training pipelines to read from and write to this S3 bucket instead of the local filesystem.
+
+2.  **API Deployment (AWS App Runner):**
+    *   Package the FastAPI application in `src/api` into a Docker container.
+    *   Create an AWS App Runner service linked to the ECR repository where the API image is stored.
+    *   App Runner will automatically handle scaling (including scaling to zero to save costs when not in use), load balancing, and HTTPS.
+
+3.  **Dashboard Deployment (AWS App Runner):**
+    *   Package the Plotly Dash application in `src/dashboard` into a Docker container.
+    *   Deploy it as a separate AWS App Runner service, similar to the API.
+
+4.  **Model Training (Manual/Scheduled):**
+    *   For maximum cost savings, the training pipeline can be run locally.
+    *   For an automated approach, a GitHub Actions workflow can be created that can be manually triggered to run the training pipeline. This workflow would run on a GitHub-hosted runner, execute the training script (which pulls data from S3), and upload the resulting model artifact back to S3.
+
+5.  **Security and Configuration:**
+    *   Use AWS Secrets Manager or Parameter Store to manage sensitive information like database credentials or API keys (if any).
+    *   Use IAM roles and policies to grant granular permissions to services (e.g., allowing the App Runner service to access the S3 bucket).
