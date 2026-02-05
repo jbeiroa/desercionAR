@@ -4,10 +4,10 @@ import dash_bootstrap_components as dbc
 import mlflow
 from mlflow.exceptions import MlflowException
 
-from src.dashboard.components.choropleth_map import choropleth_map
-from src.dashboard.components.feature_plots import feature_plots
-from src.dashboard.utils.data_loader import load_predict_data
-from src.dashboard.utils.translations import HOME_PRESENTATION
+from dashboard.components.choropleth_map import choropleth_map
+from dashboard.components.feature_plots import feature_plots
+from dashboard.utils.data_loader import load_predict_data
+from dashboard.utils.translations import HOME_PRESENTATION
 
 dash.register_page(__name__, path="/")
 

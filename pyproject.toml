@@ -6,6 +6,18 @@ authors = ["jbeiroa <jbeiroa@gmail.com>"]
 readme = "README.md"
 package-mode = false
 
+packages = [
+    { include = "api", from = "src" },
+    { include = "cli", from = "src" },
+    { include = "dashboard", from = "src" },
+    { include = "data", from = "src" },
+    { include = "features", from = "src" },
+    { include = "interpret", from = "src" },
+    { include = "models", from = "src" },
+    { include = "pipelines", from = "src" },
+]
+
+
 [tool.poetry.dependencies]
 python = "^3.11"
 matplotlib = "^3.8.2"

@@ -6,7 +6,7 @@ import typer
 import yaml
 import os
 from typing import Optional
-from src.pipelines.training import TrainingPipeline
+from pipelines.training import TrainingPipeline
 
 app = typer.Typer()
 

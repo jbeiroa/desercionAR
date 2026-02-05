@@ -10,11 +10,11 @@ import os
 from typing import List, Optional
 import numpy as np
 import pandas as pd
-from ..data import file_handler as fh
-from ..data import cleaning as l
-from ..data import preprocessing as pr
-from ..features import build_features as bf
-from .config import load_config
+from data import file_handler as fh
+from data import cleaning as l
+from data import preprocessing as pr
+from features import build_features as bf
+from pipelines.config import load_config
 
 
 class ETLPipeline:

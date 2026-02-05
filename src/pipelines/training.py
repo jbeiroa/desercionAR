@@ -2,8 +2,8 @@ import yaml
 import os
 import pandas as pd
 import mlflow
-from ..models.trainer import Trainer
-from ..models.evaluator import Evaluator
+from models.trainer import Trainer
+from models.evaluator import Evaluator
 
 
 class TrainingPipeline:

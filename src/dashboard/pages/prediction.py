@@ -5,7 +5,7 @@ import requests
 import json
 import pandas as pd
 
-from src.dashboard.utils.translations import VARIABLE_DESCRIPTIONS
+from dashboard.utils.translations import VARIABLE_DESCRIPTIONS
 
 dash.register_page(__name__, path="/prediction")
 

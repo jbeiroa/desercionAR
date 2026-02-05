@@ -5,7 +5,7 @@ Command Line Interface for the ETL pipeline.
 import typer
 from enum import Enum
 from typing import List, Optional
-from src.pipelines.etl import ETLPipeline
+from pipelines.etl import ETLPipeline
 
 app = typer.Typer()
 

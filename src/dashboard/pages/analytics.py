@@ -5,8 +5,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 
-from src.dashboard.utils.data_loader import load_train_data
-from src.dashboard.utils.translations import (
+from dashboard.utils.data_loader import load_train_data
+from dashboard.utils.translations import (
     ANALYTICS_TITLE,
     ANALYTICS_DROPDOWN_PLACEHOLDER,
     VARIABLE_DESCRIPTIONS,

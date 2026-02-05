@@ -7,9 +7,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, BaggingClassifier
 
-from .preprocessing.encoder import make_encoder
-from .preprocessing.imputer import make_imputer
-from .preprocessing.scaler import make_scaler
+from models.preprocessing.encoder import make_encoder
+from models.preprocessing.imputer import make_imputer
+from models.preprocessing.scaler import make_scaler
 
 
 PREPROCESSOR_REGISTRY = {

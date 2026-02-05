@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 from dash import dcc, html, callback, Input, Output
 import dash_bootstrap_components as dbc
-from src.dashboard.utils.translations import get_variable_description
+from dashboard.utils.translations import get_variable_description
 
 def feature_plots(data: pd.DataFrame, predictions: pd.Series) -> html.Div:
     """

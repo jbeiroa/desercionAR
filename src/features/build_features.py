@@ -3,7 +3,7 @@ This module provides functions to generate features for the school dropout model
 """
 
 import pandas as pd
-from ..data import preprocessing as pr
+from data import preprocessing as pr
 
 
 def generate_auxiliary_dataframes(data: pd.DataFrame, households: pd.DataFrame):

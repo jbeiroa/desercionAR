@@ -2,7 +2,7 @@ import json
 import pandas as pd
 import plotly.express as px
 from dash import dcc, html, callback, Input, Output
-from src.dashboard.utils.data_loader import get_geojson_path
+from dashboard.utils.data_loader import get_geojson_path
 
 def choropleth_map(data: pd.DataFrame, predictions: pd.Series) -> html.Div:
     """
