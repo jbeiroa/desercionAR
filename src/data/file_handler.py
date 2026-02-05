@@ -33,7 +33,7 @@ def eph_from_indec(
         db_type (str): db type, either 'individual' or 'hogar'
         year (int): calendar year, YYYY
         period (int): quarter, 1 to 4
-        base_url (_type_, optional): INDEC url. Defaults to BASE_INDEC_URL.
+        base_url (str, optional): INDEC url. Defaults to BASE_INDEC_URL.
 
     Returns:
         pd.DataFrame | None: a pandas DataFrame with the requested database, or None if not found

@@ -15,4 +15,5 @@ def eph_household_data() -> pd.DataFrame:
 
 @pytest.fixture(scope="module")
 def eph_merged_data() -> pd.DataFrame:
-    return pd.read_csv("tests/fixtures/eph_fixture.csv", sep=",", header=0)
+    return pd.read_csv("tests/fixtures/eph_fixture.csv", sep=",", header=0,
+                       dtype={102: str, 105: str, 179: str, 182: str, 187: str, 207: str, 209: str})
