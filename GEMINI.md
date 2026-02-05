@@ -29,6 +29,7 @@ Predicting secondary school dropout in Argentina using the EPH (Encuesta Permane
 - **Type Hinting:** All new Python functions must include type hints.
 - **Documentation:** Use Google-style docstrings for all classes and functions.
 - **Purity:** Keep preprocessing functions "pure" (input DataFrame -> output DataFrame) to avoid side effects.
+- **Comments**: Add code comments sparingly. Focus on *why* something is done, especially for complex logic, rather than *what* is done. Only add high-value comments if necessary for clarity. *NEVER* talk to the user or describe your changes through comments.
 - **Language:** All code, including comments, variable and function names, must be in english.
 
 ## 4. ML Best Practices
