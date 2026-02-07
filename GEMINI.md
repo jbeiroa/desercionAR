@@ -1,7 +1,7 @@
 # Project Context: desercionAR (School Dropout Prediction)
 
 ## 0. Environment management
-Use `poetry` for environment and package management. 
+Use `poetry` for environment and package management.
 
 ## 1. Project Goal
 Predicting secondary school dropout in Argentina using the EPH (Encuesta Permanente de Hogares) dataset. The project involves data acquisition via `pyeph`, preprocessing for social indicators, and training predictive models.
