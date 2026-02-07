@@ -117,3 +117,23 @@ def test_generate_nbi_cobertura_previsional(mock_data_for_nbi_cobertura_previsio
     result_df = bf.generate_nbi_cobertura_previsional(mock_data_for_nbi_cobertura_previsional.copy()) # Use a copy to prevent in-place modification of fixture
 
     pd.testing.assert_frame_equal(result_df, expected_nbi_cobertura_previsional_df, check_dtype=True)
+
+
+def test_generate_ratio_ocupados(
+    mock_data_for_ratio_ocupados: pd.DataFrame,
+    mock_individuals_for_ratio_ocupados: pd.DataFrame,
+    mock_households_for_ratio_ocupados: pd.DataFrame,
+    expected_ratio_ocupados_df: pd.DataFrame,
+):
+    """
+    Tests that generate_ratio_ocupados correctly calculates the ratio of employed household members.
+    """
+    # Act
+    result_df = bf.generate_ratio_ocupados(
+        mock_data_for_ratio_ocupados,
+        mock_individuals_for_ratio_ocupados,
+        mock_households_for_ratio_ocupados
+    )
+
+    # Assert
+    pd.testing.assert_frame_equal(result_df, expected_ratio_ocupados_df)

@@ -371,3 +371,52 @@ def expected_nbi_cobertura_previsional_df(mock_data_for_nbi_cobertura_previsiona
     df['V2_M'] = df['V2_M'].astype('float64')
 
     return df
+
+@pytest.fixture(scope="module")
+def mock_data_for_ratio_ocupados() -> pd.DataFrame:
+    """A small DataFrame representing student data for ratio_ocupados test."""
+    return pd.DataFrame({
+        "CODUSU": ["H1", "H2", "H3"],
+        "NRO_HOGAR": [1, 1, 1],
+        "COMPONENTE": [3, 2, 1],
+        "REALIZADA": [1, 1, 1],
+        "ANO4": [2023, 2023, 2023],
+        "TRIMESTRE": [1, 1, 1],
+        "REGION": [1, 1, 1],
+        "MAS_500": [1, 1, 1],
+        "AGLOMERADO": [1, 1, 1],
+        "PONDERA": [100, 100, 100]
+    })
+
+@pytest.fixture(scope="module")
+def mock_individuals_for_ratio_ocupados() -> pd.DataFrame:
+    """A small DataFrame representing individual data for ratio_ocupados test."""
+    return pd.DataFrame({
+        "CODUSU": ["H1", "H1", "H1", "H2", "H2", "H3", "H4", "H4", "H4", "H4"],
+        "NRO_HOGAR": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        "COMPONENTE": [1, 2, 3, 1, 2, 1, 1, 2, 3, 4],
+        "ESTADO": [1, 1, 2, 2, 3, 1, 1, 1, 2, 3], # 1: employed, 2: unemployed, 3: inactive
+    })
+
+@pytest.fixture(scope="module")
+def mock_households_for_ratio_ocupados() -> pd.DataFrame:
+    """A small DataFrame representing household data for ratio_ocupados test."""
+    return pd.DataFrame({
+        "CODUSU": ["H1", "H2", "H3", "H4"],
+        "NRO_HOGAR": [1, 1, 1, 1],
+        "IX_TOT": [3, 2, 1, 4],
+        "REALIZADA": [1, 1, 1, 1],
+        "ANO4": [2023, 2023, 2023, 2023],
+        "TRIMESTRE": [1, 1, 1, 1],
+        "REGION": [1, 1, 1, 1],
+        "MAS_500": [1, 1, 1, 1],
+        "AGLOMERADO": [1, 1, 1, 1],
+        "PONDERA": [100, 100, 100, 100]
+    })
+
+@pytest.fixture(scope="module")
+def expected_ratio_ocupados_df(mock_data_for_ratio_ocupados: pd.DataFrame) -> pd.DataFrame:
+    """Expected output after applying generate_ratio_ocupados."""
+    df = mock_data_for_ratio_ocupados.copy()
+    df['ratio_ocupados'] = [2/3, 0.0, 1.0]
+    return df

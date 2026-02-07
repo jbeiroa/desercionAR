@@ -422,7 +422,6 @@ class ETLPipeline:
             "NBI_TRABAJO_PRECARIO",
             "NBI_VIVIENDA",
             "NBI_ZONA_VULNERABLE",
-            "MAS_500",
             "CH04",
         ]
         if train_test:
@@ -432,7 +431,7 @@ class ETLPipeline:
         data_concat.drop(drop_cols, axis=1, inplace=True)
         data_concat = self._homogenize_binary_columns(data_concat, binary_columns)
 
-        data_concat.loc[:, "PP04B1"].replace({2: 0, np.nan: 0}, inplace=True)
+        data_concat["PP04B1"] = data_concat["PP04B1"].replace({2: 0, np.nan: 0})
         data_concat.rename({"PP04B1": "servicio_domestico"}, axis=1, inplace=True)
         data_concat.rename(
             {"PP07H_jefx": "APORTES_JUBILATORIOS_jefx"}, axis=1, inplace=True
