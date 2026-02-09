@@ -90,8 +90,7 @@ def get_repo_path() -> str:
         str: the path of the root repository
     """
     file_path = os.path.dirname(__file__)
-    data_path = os.path.dirname(file_path)
-    src_path = os.path.dirname(data_path)
+    src_path = os.path.dirname(file_path)
     repo_path = os.path.dirname(src_path)
     return repo_path
 

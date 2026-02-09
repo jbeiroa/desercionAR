@@ -173,3 +173,6 @@ outputs/
 mlflow.db
 *-shm
 *-wal
+
+data/
+/data

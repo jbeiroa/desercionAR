@@ -471,6 +471,8 @@ class ETLPipeline:
         output_dir = pipeline_config.get("output_dir", "data/processed")
         repo_path = fh.get_repo_path()
         output_path = os.path.join(repo_path, output_dir)
+        print(f"DEBUG: ETL output_path is: {output_path}")
+        print(f"DEBUG: Output path is set to: {output_path}")
         os.makedirs(output_path, exist_ok=True)
 
         train_path = os.path.join(output_path, "train.csv")
