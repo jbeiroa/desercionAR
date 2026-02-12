@@ -3,48 +3,29 @@ Command Line Interface for the ETL pipeline.
 """
 
 import typer
-from enum import Enum
-from typing import List, Optional
 from pipelines.etl import ETLPipeline
 
 app = typer.Typer()
 
 
-class DatasetType(str, Enum):
-    all = "all"
-    train_test = "train-test"
-    predict = "predict"
-
-
 @app.command()
 def etl(
-    years: Optional[List[int]] = typer.Option(
-        [2021, 2022], help="List of years to process."
-    ),
-    quarters: Optional[List[int]] = typer.Option(
-        [2, 3, 4], help="List of quarters to process."
-    ),
-    dataset_type: DatasetType = typer.Option(
-        DatasetType.all, help="Type of dataset to create."
+    config_path: str = typer.Option(
+        "configs/etl_pipeline.yaml", help="Path to the ETL configuration YAML file."
     ),
 ):
     """
-    Run the ETL pipeline with specified years, quarters, and dataset type.
+    Run the ETL pipeline with a specified configuration file.
     """
-    typer.echo(f"Running ETL pipeline for years: {years}, quarters: {quarters}")
-    typer.echo(f"Dataset type: {dataset_type.value}")
-
+    typer.echo(f"Running ETL pipeline with config: {config_path}")
     try:
-        pipeline = ETLPipeline()
-        pipeline.run(
-            years=years,
-            quarters=quarters,
-            dataset_type=dataset_type.value,
-        )
+        pipeline = ETLPipeline(config_path=config_path)
+        pipeline.run()  # No arguments needed
         typer.echo("ETL pipeline completed successfully!")
     except Exception as e:
         typer.echo(f"Error running ETL pipeline: {e}", err=True)
         raise typer.Exit(code=1)
+
 
 
 if __name__ == "__main__":

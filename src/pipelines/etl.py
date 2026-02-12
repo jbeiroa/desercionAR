@@ -535,12 +535,20 @@ class ETLPipeline:
         self,
         years: Optional[List[int]] = None,
         quarters: Optional[List[int]] = None,
-        dataset_type: str = "all",
+        dataset_type: str = None,
     ):
         """Executes the complete ETL pipeline.
 
         Runs the extract, transform, and load steps in sequence.
         """
+        pipeline_config = self.config.get("pipeline", {})
+        if years is None:
+            years = pipeline_config.get("years", [])
+        if quarters is None:
+            quarters = pipeline_config.get("quarters", [])
+        if dataset_type is None:
+            dataset_type = pipeline_config.get("dataset_type", "all")
+
         print("Extracting data...")
         self.extract(years, quarters)
         print("Transforming data...")

@@ -1,12 +1,12 @@
 # File: configs/training.yaml
 
 mlflow:
-  tracking_uri: "file:./mlruns"
+  tracking_uri: "http://3.15.177.11:5000"
   experiment_name: "Light Training desercionAR"
 
 data:
-  train_path: "~/Code/data/desercionAR/train.csv"
-  test_path: "~/Code/data/desercionAR/test.csv"
+  train_path: "data/processed/train.csv"
+  test_path: "data/processed/test.csv"
 
 # Preprocessor step names and the registry keys for their functions.
 preprocessors:

@@ -1,7 +1,8 @@
 pipeline:
   years: [2022, 2023]
   quarters: [1, 2]
-  output_dir: "data"
+  dataset_type: "all"
+  output_dir: "data/processed"
   transformations:
     - function: generate_conyuge_trabaja
     - function: generate_jefa_mujer
