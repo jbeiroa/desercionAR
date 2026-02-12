@@ -102,11 +102,11 @@ La tubería de ETL (`src/pipelines/etl.py`) procesa datos brutos de la encuesta 
 ### Inicio Rápido
 
 ```bash
-# Generar todos los conjuntos de datos con configuración predeterminada (datos 2022-2023)
-python -m src.cli.etl
+# Generar todos los conjuntos de datos usando la configuración predeterminada de configs/etl_pipeline.yaml
+PYTHONPATH=$PWD/src poetry run python -m src.cli.etl
 
-# Generar conjunto de predicción solo para 2023 Q1-Q2
-python -m src.cli.etl --years 2023 --quarters 1 --quarters 2 --dataset-type predict
+# Generar conjuntos de datos con un archivo de configuración personalizado
+PYTHONPATH=$PWD/src poetry run python -m src.cli.etl --config-path configs/etl_pipeline.yaml
 ```
 
 ---
@@ -161,11 +161,11 @@ training:
 ### Inicio Rápido
 
 ```bash
-# Entrenar con configuración predeterminada
-python -m src.cli.training
+# Entrenar con la configuración predeterminada de configs/training.yaml
+PYTHONPATH=$PWD/src poetry run python -m src.cli.training
 
-# Entrenar con configuración personalizada
-python -m src.cli.training --config configs/training_light.yaml
+# Entrenar con un archivo de configuración personalizado
+PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/training_light.yaml
 ```
 
 ### Integración de MLflow

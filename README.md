@@ -102,11 +102,11 @@ The ETL pipeline (`src/pipelines/etl.py`) processes raw EPH survey data into ana
 ### Quick Start
 
 ```bash
-# Generate all datasets with default configuration (2022-2023 data)
-python -m src.cli.etl
+# Generate all datasets using the default configuration from configs/etl_pipeline.yaml
+PYTHONPATH=$PWD/src poetry run python -m src.cli.etl
 
-# Generate prediction-only dataset for 2023 Q1-Q2
-python -m src.cli.etl --years 2023 --quarters 1 --quarters 2 --dataset-type predict
+# Generate datasets with a custom configuration file
+PYTHONPATH=$PWD/src poetry run python -m src.cli.etl --config-path configs/etl_pipeline.yaml
 ```
 
 ---
@@ -161,11 +161,11 @@ training:
 ### Quick Start
 
 ```bash
-# Train with default configuration
-python -m src.cli.training
+# Train with the default configuration from configs/training.yaml
+PYTHONPATH=$PWD/src poetry run python -m src.cli.training
 
-# Train with custom configuration
-python -m src.cli.training --config configs/training_light.yaml
+# Train with a custom configuration file
+PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/training_light.yaml
 ```
 
 ### MLflow Integration

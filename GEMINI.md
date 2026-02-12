@@ -16,6 +16,17 @@
 - **CLI Workflow**:
     - Use `!pytest` after any refactoring to ensure no regressions.
     - Use `@src` to provide context when modifying specific logic.
+    - **Pipeline Execution**:
+        - **ETL Pipeline**: To run the ETL pipeline, use:
+            ```bash
+            PYTHONPATH=$PWD/src poetry run python -m src.cli.etl --config-path configs/etl_pipeline.yaml
+            ```
+            The `--config-path` argument specifies the YAML configuration file for the ETL process. If omitted, it defaults to `configs/etl_pipeline.yaml`.
+        - **Training Pipeline**: To run the Training pipeline, use:
+            ```bash
+            PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/training.yaml
+            ```
+            The `--config` argument specifies the YAML configuration file for the training process. If omitted, it defaults to `configs/training.yaml`.
 
 ## 3. Project Structure & Conventions
 
