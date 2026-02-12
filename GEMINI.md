@@ -28,6 +28,17 @@
             ```
             The `--config` argument specifies the YAML configuration file for the training process. If omitted, it defaults to `configs/training.yaml`.
 
+-   **Lessons Learned & Watch Points**:
+    1.  **CLI and Pipeline Configuration Parsing**:
+        *   When integrating CLI tools (`typer`) with existing pipelines, be mindful of how configuration files are parsed and consumed by different modules.
+        *   Pipelines should ideally be self-sufficient, loading their own parameters from configuration files (e.g., `etl_pipeline.yaml`'s `pipeline` section) if not explicitly provided via CLI arguments. This simplifies the CLI interface.
+
+    2.  **`PYTHONPATH` for Python Module Execution**:
+        *   When running Python modules directly (e.g., `python -m src.cli.etl`), remember to set `PYTHONPATH=$PWD/src` to ensure Python correctly resolves internal package imports within the project. This prevents `ModuleNotFoundError`s.
+
+    3.  **Relative Data Paths in Configuration Files**:
+        *   Always use project-relative paths (e.g., `data/processed/train.csv`) in configuration files (e.g., `configs/training.yaml`, `configs/etl_pipeline.yaml`) instead of absolute, user-specific paths (`~/Code/data/...`). This ensures portability across different environments and users.
+
 ## 3. Project Structure & Conventions
 
 - **`src` Directory**: All Python source code resides in the `src/` directory.
