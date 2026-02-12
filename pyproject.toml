@@ -43,6 +43,7 @@ fastapi = "^0.111.1"
 uvicorn = "^0.30.3"
 pytest = "^9.0.2"
 dvc = {extras = ["s3"], version = "^3.66.1"}
+boto3 = "1.40.0"
 
 [build-system]
 requires = ["poetry-core"]
