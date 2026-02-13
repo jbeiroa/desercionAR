@@ -1,0 +1,97 @@
+# File: configs/training.yaml
+
+mlflow:
+  tracking_uri: "http://3.15.177.11:5000"
+  experiment_name: "Light Training desercionAR"
+
+data:
+  train_path: "data/processed/train.csv"
+  test_path: "data/processed/test.csv"
+
+# Preprocessor step names and the registry keys for their functions.
+preprocessors:
+  imputer: "make_imputer"
+  scaler: "make_scaler"
+  encoder: "make_encoder"
+
+# Grid search configuration for models
+models:
+  - type: "logistic_regression"
+    base_params:
+      random_state: 42
+      solver: "liblinear"
+    hyperparams:
+      C:
+        type: "logspace"
+        start: -3.5
+        stop: -1
+        num: 20
+      penalty: ["l1", "l2"]
+      class_weight: [null, "balanced"]
+
+  - type: "decision_tree"
+    base_params:
+      random_state: 42
+    hyperparams:
+      max_depth:
+        type: "range"
+        start: 8
+        stop: 38
+        step: 4
+      min_samples_leaf: [10, 20, 50]
+      class_weight: [null, "balanced"]
+
+  - type: "random_forest"
+    base_params:
+      random_state: 42
+    hyperparams:
+      n_estimators:
+        type: "range"
+        start: 8
+        stop: 38
+        step: 4
+      class_weight: [null, "balanced"]
+
+  - type: "bagging"
+    base_params:
+      random_state: 42
+      # This defines the nested model. The logic will recursively build it.
+      estimator:
+        type: "decision_tree"
+        base_params:
+          random_state: 42
+          max_depth: 5 # A fixed depth for the base estimator
+    hyperparams:
+      n_estimators: 
+        type: "range"
+        start: 10
+        stop: 32
+        step: 2
+
+  - type: "bagging"
+    base_params:
+      random_state: 42
+      # This defines the nested model. The logic will recursively build it.
+      estimator:
+        type: "logistic_regression"
+        base_params:
+          random_state: 42
+          solver: "liblinear"
+        hyperparams:
+          C:
+            type: "logspace"
+            start: -3.5
+            stop: -1
+            num: 20
+          penalty: ["l1", "l2"]
+    hyperparams:
+      n_estimators: 
+        type: "range"
+        start: 10
+        stop: 32
+        step: 2
+
+# Configuration for the GridSearchCV process
+training:
+  cv_folds: 5
+  scoring: "recall"

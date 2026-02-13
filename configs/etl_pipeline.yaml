@@ -1,0 +1,18 @@
+pipeline:
+  years: [2022, 2023]
+  quarters: [1, 2]
+  dataset_type: "all"
+  output_dir: "data/processed"
+  transformations:
+    - function: generate_conyuge_trabaja
+    - function: generate_jefa_mujer
+    - function: generate_hogar_monop
+    - function: generate_ratio_ocupados
+    - function: generate_nbi_cobertura_previsional
+    - function: generate_nbi_dificultad_laboral
+    - function: generate_nbi_hacinamiento
+    - function: generate_nbi_sanitaria
+    - function: generate_nbi_tenencia
+    - function: generate_nbi_trabajo_precario
+    - function: generate_nbi_vivienda_precaria
+    - function: generate_nbi_zona_vulnerable

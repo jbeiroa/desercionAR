@@ -1,84 +1,271 @@
-# Desercion Escolar en Argentina 
-En Argentina, la educación es un derecho consagrado por la Constitución Nacional y regulado por la Ley Nº 26.206 de Educación Nacional. La escolaridad obligatoria abarca 14 años consecutivos, desde sala de 4 y preescolar en el Nivel Inicial, pasando por el Nivel Primario (con duración de 6 o 7 años según la jurisdicción), hasta el Nivel Secundario (con duración de 6 o 5 años, según la duración del nivel primario de la jurisdicción).
+# School Dropout Prediction in Argentina
 
-El país cuenta con una cobertura casi universal del Nivel Primario, con tasas de asistencia que se sitúan alrededor del 99%. En el Nivel Secundario la cobertura de la población de entre 12 y 19 años es casi universal en el Ciclo Básico y llega al 91% en el Ciclo Orientado. Sin embargo, aproximadamente el 20% de los jóvenes y adultos de entre 18 y 24 años no ha completado sus estudios obligatorios.
+## Overview
 
-Aunque la tasa de abandono escolar en primaria es notablemente baja, representando un 0,41% del total a nivel nacional, la situación se torna preocupante al ingresar al nivel secundario. Aquí, el abandono asciende al 7,66%, afectando al 16,8% de los estudiantes en su último año de la escolaridad obligatoria.
-Frente a este panorama, nuestro proyecto se propone desarrollar un Sistema de Alerta Temprana (SAT) para identificar señales de riesgo de abandono escolar en Argentina, utilizando la Encuesta Permanente de Hogares (EPH) como principal fuente de datos.
+This project develops an **Early Warning System (EWS)** to identify at-risk students prone to school dropout in Argentina, using data from the Permanent Household Survey (EPH - *Encuesta Permanente de Hogares*).
 
-Este proyecto no solo tiene la intención de ser una herramienta de detección temprana, sino también un recurso valioso para los formadores de políticas educativas y los profesionales de la educación.
+### Context
 
-### Objetivos
-- Desarrollar un modelo de predicción de deserción escolar para ser utilizado por el SAT.
-- Desarrollar un tablero de análisis de datos educativos de la EPH.
-- Integrar el SAT en el tablero de análisis.
+Education in Argentina is guaranteed by the National Constitution and regulated by Law No. 26,206 (National Education Law). Compulsory education spans 14 consecutive years, from preschool through secondary school. While primary education achieves near-universal coverage (99% attendance), secondary school completion remains a challenge—approximately 20% of young adults aged 18-24 have not completed compulsory education.
 
-### Antecedente
-Tomás Michel Torino realizó estudio similar en su Tesis de Maestría de la UTDT. En este trabajo se construyó una base de datos utilizando las EPH de los últimos dos trimestres de 2021 y los primeros dos de 2022 para realizar el entrenamiento y validación de modelos que permite predecir si una persona de hasta 18 años de edad ha desertado o no de alguno de los niveles obligatorios del sistema educativo.
+The dropout rate at the primary level is low (0.41%), but increases significantly at secondary level (7.66%), affecting 16.8% of students in their final year of compulsory education.
 
-La base de datos construida contiene una variable (objetivo) llamada DESERTO con valores binarios (1 si la persona declara haber terminado sus estudios obligatorios y 0 si no lo hicieron y además declaran no continuar cursando).
+### Project Goals
 
-#### Propuestas de mejora sobre el antecedente
-La muestra de la EPH sigue una estructura de tipo 2-2-2:
-- Un hogar es entrevistado durante dos trimestres consecutivos.
-- Ese hogar se retira de la muestra por dos trimestres.
-- El mismo hogar vuelve a entrevistarse dos trimestres consecutivos.
+1. Develop a predictive model for student dropout to power the EWS.
+2. Build an interactive dashboard for analyzing educational data from the EPH.
+3. Integrate the EWS into the analytics dashboard for actionable insights.
 
-De esta forma, la EPH permite hacer seguimientos longitudinales de los integrantes de un mismo hogar en un período de un año y medio.
-El trabajo de Michel Torino no hace uso de esa estructura, en cuanto asigna los valores de la variable objetivo según lo que declaran las personas un único trimestre (borrando duplicados entre distintos períodos de observación). Una posible mejora es construir las bases de datos a partir de las trayectorias: tomar personas que un dado trimestre declararon estar cursando en algún nivel obligatorio, y al volver a a ser encuestadas habían desertado.
+### Improvements Over Prior Work
 
-A su vez, el estudio de Michel Torino toma la población en edad escolar teórica. Dada  la cobertura del Nivel Primario y Ciclo Básico del Nivel Secundario, podría ser conveniente tomar la población de 15 años o más. Esto permitiría incluir la porción de menor cobertura del Nivel Secundario y la Educación Permanente de Jóvenes y Adultos (EPJA). 
+This project improves upon previous research (Michel Torino's thesis) in several key ways:
 
-Los valores nulos fueron reemplazados por la media de cada atributo. En el caso particular de los ingresos y deciles de ingresos, podría ser provechoso investigar otras formas de imputación.
+- **Longitudinal Tracking**: Leverages EPH's 2-2-2 panel structure (households tracked over 18 months) to construct dropout trajectories. Previous work relied on point-in-time snapshots.
+- **Target Population**: Focuses on ages 15+ to capture secondary-level dropouts and adult education participation, rather than theoretical school-age populations.
+- **Imputation Strategy**: Explores advanced imputation techniques for income and income decile variables, beyond simple mean imputation.
 
-# Sobre este repositorio
-Organización del proyecto
-------------
+---
 
-    ├── README.md
-    ├── artifacts          <- Repositorio de artefactos, como logs, transformadores, etc.
-    ├── data
-    │   ├── raw            <- La data de origen, inmutable.
-    │   ├── preprocessed   <- Data intermedia con algunas transformaciones.
-    │   └── stage          <- La data lista para ser utilizada en un modelo.
-    │
-    ├── models             <- Modelos listos.
-    │
-    ├── notebooks          <- Jupyter notebooks. (desde Humai recomiendan agregarle la fecha al inicio del nombre.)
-    
-    
-Para ejecutar:
-------------
+## Repository Structure
 
-Python version: 3.11.5
-<br>
-Poetry package orchestrator must be installed (version used at installation: 1.6.1)
+### Architecture Standards
 
+- **Modularity**: Logic is organized in `src/` by concern:
+  - `src/data/`: Data loading, cleaning, and preprocessing
+  - `src/features/`: Feature engineering functions
+  - `src/models/`: Training, evaluation, and model management
+  - `src/pipelines/`: ETL and training orchestration
+  - `src/interpret/`: Explainability (SHAP, planned)
+  - `src/api/`: FastAPI prediction endpoints (planned)
+  - `src/dashboard/`: Plotly analytics dashboard
 
-## Cómo trabajar las ramas ? (GitFlow)
-- Rama principal: main
-- Rama de desarrollo (la cual sale y va hacia main): develop
-- El resto de las ramas salen desde develop y vuelven a develop: 
-  - Hacemos una rama por cada tarea de Trello, y nombramos la rama igual a la tarea pero en sneak_case. Ejemplo: Si la tarea de Trello se llama Mi Primer Tarea entonces la rama se llama la_primer_tarea_de_pepito
+- **Code Quality**:
+  - Type hints on all functions
+  - Google-style docstrings for classes and methods
+  - Pure preprocessing functions (input DataFrame → output DataFrame, no side effects)
+  - All code and documentation in English
 
-## Cómo trabajar los commits ?
-Todos los commits comienzan el mensaje indicando el nombre de la rama. Esto permite tener facil rastreo del historial de cambios en las ramas tronco (develop y main).
-Ejemplo no ideal: La rama la_primer_tarea_de_pepito podría tener 3 commits con los mensajes primera parte de mi tarea, segunda parte de mi tarea y tercera parte de mi tarea. De esta manera quedarían ordenados así en el historial de commits para las ramas tronco (luego de mergear el commit, obvio):
-- ```tercera parte de mi tarea```
-- ```segunda parte de mi tarea```
-- ```primera parte de mi tarea```
+- **ML Best Practices**:
+  - No data leakage (future information excluded)
+  - Stratified K-fold cross-validation for imbalanced class handling
 
-El problema con no haber indicado el nombre de rama en el commit es que no sabemos en qué rama se hizo el cambio, por lo tanto perdemos el orden y la posibilidad de usar esa rama si es útil hacer nuevos cambios desde allí.
-Ahora, si agregamos el nobre de rama en el mensaje del commit entonces quedaría así:
+### Directory Layout
 
-- ```la_primer_tarea_de_pepito: tercera parte de mi tarea```
-- ```la_primer_tarea_de_pepito: segunda parte de mi tarea```
-- ```la_primer_tarea_de_pepito: primera parte de mi tarea```
+```
+desercionAR/
+├── src/
+│   ├── __init__.py
+│   ├── data/                    # Data loading, cleaning, preprocessing
+│   ├── features/                # Feature engineering
+│   ├── models/                  # Trainer, Evaluator, preprocessing factories
+│   │   └── preprocessing/       # Imputer, Scaler, Encoder factories
+│   ├── pipelines/               # ETL and Training orchestration
+│   ├── interpret/               # Explainability logic (planned)
+│   ├── api/                     # FastAPI endpoints (planned)
+│   ├── dashboard/               # Plotly app
+│   └── cli/                     # CLI entry points
+├── configs/
+│   ├── etl_pipeline.yaml        # ETL configuration
+│   ├── training.yaml            # Full training configuration
+│   └── training_light.yaml      # Lightweight training configuration
+├── data/
+│   ├── raw/                     # Original EPH data
+│   ├── processed/               # ETL output (train.csv, test.csv, predict.csv)
+│   └── stage/                   # Intermediate processing artifacts
+├── models/                      # Model checkpoints and registry
+├── notebooks/                   # Experimental notebooks (dated)
+├── figures/                     # Generated visualizations
+├── tests/                       # Unit and integration tests
+├── pyproject.toml               # Project dependencies
+├── Dockerfile
+└── README.md
+```
 
-Si Pepe necesita el codigo de Mengano mientras desarrolla su tarea, se lo trae haciendo git pull. Habiendo ambos respetado esta regla de mensaje en los commits lo que sucede cuando se mergea el codigo de Pepe a develop es lo siguiente:
+---
 
+## ETL Pipeline
 
-- ```la_primer_tarea_de_pepito: tercera parte de mi tarea```
-- ```la_primer_tarea_de_pepito: segunda parte de mi tarea```
-- ```la_primer_tarea_de_mengano: codigo super util``` *<-- Acá es muy claro que pepe se trajo este commit de la rama de mengano. Si mengano no nombraba su rama correctamente entonces nadie sabe de donde salió ese commit.*
-- ```la_primer_tarea_de_pepito: primera parte de mi tarea```
+The ETL pipeline (`src/pipelines/etl.py`) processes raw EPH survey data into analysis-ready datasets for dropout prediction.
+
+### Pipeline Stages
+
+1. **Extract**: Downloads raw individual and household EPH microdata using `pyeph`; selects predefined features.
+2. **Transform**: Filters for students aged 14+ who haven't completed secondary education; applies feature engineering transformations from `configs/etl_pipeline.yaml`.
+3. **Load**: Generates target variable (dropout indicator), splits data chronologically into train/test/predict sets, prevents data leakage, applies final cleaning (binary homogenization, missing value handling). Outputs three CSV files.
+
+### Output Datasets
+
+- `train.csv`: Training data with target variable for model development
+- `test.csv`: Test set for final model evaluation
+- `predict.csv`: Unlabeled data for production predictions
+
+### Quick Start
+
+```bash
+# Generate all datasets using the default configuration from configs/etl_pipeline.yaml
+PYTHONPATH=$PWD/src poetry run python -m src.cli.etl
+
+# Generate datasets with a custom configuration file
+PYTHONPATH=$PWD/src poetry run python -m src.cli.etl --config-path configs/etl_pipeline.yaml
+```
+
+---
+
+## Training Pipeline
+
+The training pipeline (`src/pipelines/training.py`) orchestrates model training, evaluation, and experiment tracking via MLflow.
+
+### Components
+
+- **Trainer** (`trainer.py`): Builds sklearn pipelines combining preprocessing (imputation, scaling, encoding) with classifiers. Runs GridSearchCV across configurable hyperparameter grids; logs results to MLflow.
+
+- **Evaluator** (`evaluator.py`): Computes test-set metrics (F1, accuracy, precision, recall, AUC); generates confusion matrices; logs artifacts to MLflow.
+
+- **TrainingPipeline** (`training.py`): Orchestrates end-to-end workflow—sets up MLflow experiment, trains multiple models in parallel runs, evaluates each, and registers the best performer to the Model Registry.
+
+### Configuration
+
+Training is controlled via YAML:
+
+```yaml
+mlflow:
+  tracking_uri: "file:./mlruns"
+  experiment_name: "dropout_prediction"
+
+data:
+  train_path: "data/processed/train.csv"
+  test_path: "data/processed/test.csv"
+
+preprocessing:
+  imputer:
+    enabled: true
+  scaler:
+    enabled: true
+  encoder:
+    enabled: true
+
+models:
+  - type: "logistic_regression"
+    hyperparams:
+      C: [0.001, 0.01, 0.1, 1.0]
+      penalty: ['l1', 'l2']
+  - type: "random_forest"
+    hyperparams:
+      n_estimators: [8, 20, 38]
+
+training:
+  cv_folds: 5
+  scoring: "f1"
+```
+
+### Quick Start
+
+```bash
+# Train with the default configuration from configs/training.yaml
+PYTHONPATH=$PWD/src poetry run python -m src.cli.training
+
+# Train with a custom configuration file
+PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/training_light.yaml
+```
+
+### MLflow Integration
+
+- All hyperparameters and CV scores are logged per model
+- Test set metrics and confusion matrices are logged to MLflow UI
+- Best model is registered to MLflow Model Registry for serving
+- Access UI: `mlflow ui --backend-store-uri file:./mlruns`
+
+---
+
+## Deployment
+
+This project is designed to be deployed using Docker and Docker Compose. The full application stack, including the MLflow server, FastAPI prediction API, and the Plotly Dash dashboard, can be run on a single cloud instance (e.g., an AWS EC2 `t3.small` or larger).
+
+### Services
+- **MLflow Server:** Accessible on port `5000`. Serves the MLflow UI and tracks experiments. Uses an S3 bucket for artifact storage and a persistent volume for metadata.
+- **FastAPI:** Accessible on port `8000`. Provides a `/predict` endpoint to get dropout predictions from the latest registered model.
+- **Dashboard:** Accessible on port `8050`. An interactive Plotly Dash application for data visualization and analysis.
+
+### Quick Start (on EC2)
+
+1.  **Prerequisites:** An EC2 instance with Docker and Docker Compose installed.
+2.  **Clone the repository:** `git clone https://github.com/jbeiroa/desercionAR`
+3.  **Configure Environment:** Set up AWS credentials (e.g., via an IAM role attached to the instance) with access to the required S3 buckets.
+4.  **Build and Run:**
+    ```bash
+    cd desercionAR
+    docker-compose build
+    docker-compose up -d
+    ```
+5.  **Access Services:** Ensure the instance's security group allows inbound traffic on ports 5000, 8000, and 8050.
+
+---
+
+## Setup & Dependencies
+
+### Requirements
+
+- Python 3.12.3
+- Poetry 1.6.1+
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/jbeiroa/desercionAR
+cd desercionAR
+
+# Install dependencies
+poetry install
+
+# Activate environment
+eval $(poetry env activate)
+```
+
+---
+
+## Development
+
+### Testing
+
+Run tests after any refactoring:
+
+```bash
+pytest tests/
+```
+
+### Adding New Models
+
+To add a new model type:
+
+1. Add model class to `MODEL_REGISTRY` in `trainer.py`
+2. Define hyperparameters in `training.yaml` under `models`
+3. Run training pipeline
+
+### Extending Preprocessing
+
+To add custom preprocessing:
+
+1. Create factory function in `preprocessing/`
+2. Register in `PREPROCESSOR_REGISTRY` in `trainer.py`
+3. Reference in `training.yaml`
+
+---
+
+## Project Timeline & Status
+
+- **v0.1.0**: Initial ETL and baseline models
+- **v0.2.0**: Feature engineering and model refinement
+- **Current**: MLflow integration, modular architecture, multi-model training
+
+---
+
+## Contact & Collaboration
+
+For questions or contributions, please open an issue or contact the project maintainers.
+
+---
+
+## License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. See the [LICENSE](LICENSE) file for more details.
