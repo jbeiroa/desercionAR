@@ -177,6 +177,30 @@ PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/train
 
 ---
 
+## Deployment
+
+This project is designed to be deployed using Docker and Docker Compose. The full application stack, including the MLflow server, FastAPI prediction API, and the Plotly Dash dashboard, can be run on a single cloud instance (e.g., an AWS EC2 `t3.small` or larger).
+
+### Services
+- **MLflow Server:** Accessible on port `5000`. Serves the MLflow UI and tracks experiments. Uses an S3 bucket for artifact storage and a persistent volume for metadata.
+- **FastAPI:** Accessible on port `8000`. Provides a `/predict` endpoint to get dropout predictions from the latest registered model.
+- **Dashboard:** Accessible on port `8050`. An interactive Plotly Dash application for data visualization and analysis.
+
+### Quick Start (on EC2)
+
+1.  **Prerequisites:** An EC2 instance with Docker and Docker Compose installed.
+2.  **Clone the repository:** `git clone https://github.com/jbeiroa/desercionAR`
+3.  **Configure Environment:** Set up AWS credentials (e.g., via an IAM role attached to the instance) with access to the required S3 buckets.
+4.  **Build and Run:**
+    ```bash
+    cd desercionAR
+    docker-compose build
+    docker-compose up -d
+    ```
+5.  **Access Services:** Ensure the instance's security group allows inbound traffic on ports 5000, 8000, and 8050.
+
+---
+
 ## Setup & Dependencies
 
 ### Requirements
@@ -188,7 +212,7 @@ PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/train
 
 ```bash
 # Clone repository
-git clone <repo-url>
+git clone https://github.com/jbeiroa/desercionAR
 cd desercionAR
 
 # Install dependencies
@@ -244,5 +268,4 @@ For questions or contributions, please open an issue or contact the project main
 
 ## License
 
-[Add license information]
-
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License. See the [LICENSE](LICENSE) file for more details.

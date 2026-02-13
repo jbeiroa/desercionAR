@@ -177,6 +177,30 @@ PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/train
 
 ---
 
+## Despliegue
+
+Este proyecto está diseñado para ser desplegado usando Docker y Docker Compose. La pila completa de la aplicación, incluyendo el servidor de MLflow, la API de predicción FastAPI y el panel de control de Plotly Dash, se puede ejecutar en una única instancia en la nube (por ejemplo, una `t3.small` de AWS EC2 o superior).
+
+### Servicios
+- **Servidor MLflow:** Accesible en el puerto `5000`. Sirve la interfaz de usuario de MLflow y realiza el seguimiento de los experimentos. Utiliza un bucket de S3 para el almacenamiento de artefactos y un volumen persistente para los metadatos.
+- **FastAPI:** Accesible en el puerto `8000`. Proporciona un endpoint `/predict` para obtener predicciones de deserción del último modelo registrado.
+- **Dashboard:** Accesible en el puerto `8050`. Una aplicación interactiva de Plotly Dash para la visualización y análisis de datos.
+
+### Inicio Rápido (en EC2)
+
+1.  **Prerrequisitos:** Una instancia EC2 con Docker y Docker Compose instalados.
+2.  **Clonar el repositorio:** `git clone https://github.com/jbeiroa/desercionAR`
+3.  **Configurar el Entorno:** Configurar las credenciales de AWS (por ejemplo, a través de un rol de IAM asociado a la instancia) con acceso a los buckets de S3 necesarios.
+4.  **Construir y Ejecutar:**
+    ```bash
+    cd desercionAR
+    docker-compose build
+    docker-compose up -d
+    ```
+5.  **Acceder a los Servicios:** Asegurarse de que el grupo de seguridad de la instancia permita el tráfico entrante en los puertos 5000, 8000 y 8050.
+
+---
+
 ## Configuración y Dependencias
 
 ### Requisitos
@@ -188,7 +212,7 @@ PYTHONPATH=$PWD/src poetry run python -m src.cli.training --config configs/train
 
 ```bash
 # Clonar repositorio
-git clone <repo-url>
+git clone https://github.com/jbeiroa/desercionAR
 cd desercionAR
 
 # Instalar dependencias
@@ -244,4 +268,4 @@ Para preguntas o contribuciones, abra un issue o contacte a los mantenedores del
 
 ## Licencia
 
-[Agregar información de licencia]
+Este proyecto está licenciado bajo la Licencia Creative Commons Atribución-NoComercial 4.0 Internacional. Consulte el archivo [LICENSE](LICENSE) para más detalles.
