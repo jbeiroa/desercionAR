@@ -4,9 +4,34 @@ services:
     image: ghcr.io/mlflow/mlflow:v3.8.1
     ports:
       - "5000:5000"
+    environment:
+      - MLFLOW_SERVER_ALLOWED_HOSTS=* # Required for some MLflow versions
     command: >
       mlflow server
       --host 0.0.0.0
       --port 5000
       --backend-store-uri sqlite:///mlflow.db
       --default-artifact-root s3://desercionar-mlflow-artifacts/
+  api:
+    build:
+      context: . # Build context is the project root
+      dockerfile: src/api/Dockerfile # Path to the API's Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000 # Point to the MLflow service within the Docker network
+      - PYTHONPATH=/app # Ensure Python can find src modules
+    depends_on:
+      - mlflow
+  dashboard:
+    build:
+      context: . # Build context is the project root
+      dockerfile: src/dashboard/Dockerfile # Path to the Dashboard's Dockerfile
+    ports:
+      - "8050:8050"
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000 # Point to the MLflow service within the Docker network
+      - PYTHONPATH=/app # Ensure Python can find src modules
+    depends_on:
+      - mlflow
+      - api # Dashboard might depend on API being up, if it calls it directly

@@ -1,4 +1,3 @@
-import dash
 from dash import Dash
 import dash_bootstrap_components as dbc
 from dashboard.components.layout import create_layout
