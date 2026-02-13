@@ -6,6 +6,8 @@ services:
       - "5000:5000"
     environment:
       - MLFLOW_SERVER_ALLOWED_HOSTS=* # Required for some MLflow versions
+    volumes:
+      - mlflow_data:/mlflow
     command: >
       mlflow server
       --host 0.0.0.0
@@ -31,7 +33,9 @@ services:
       - "8050:8050"
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000 # Point to the MLflow service within the Docker network
-      - PYTHONPATH=/app # Ensure Python can find src modules
+      - PYTHONPATH=/app/src # Ensure Python can find src modules
     depends_on:
       - mlflow
       - api # Dashboard might depend on API being up, if it calls it directly
+volumes:
+  mlflow_data: {}

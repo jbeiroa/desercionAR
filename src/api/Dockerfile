@@ -9,7 +9,7 @@ RUN pip install poetry
 COPY pyproject.toml poetry.lock ./
 
 # Install dependencies
-RUN poetry config virtualenvs.create false && poetry install --no-root --no-dev
+RUN poetry config virtualenvs.create false && poetry install --no-root
 
 # Copy the application code. Note: the `api` service in docker-compose.yml has its context set to the project root,
 # so paths like `src/api/` are relative to the build context.
@@ -19,8 +19,10 @@ COPY src/features/ ./src/features/
 COPY src/models/ ./src/models/
 COPY src/pipelines/ ./src/pipelines/
 COPY configs/ ./configs/
-COPY tests/ ./tests/ # If needed for testing within the container, otherwise omit
-COPY data/processed/ ./data/processed/ # Copy processed data if it's not pulled via DVC inside the container
+COPY tests/ ./tests/ 
+# If needed for testing within the container, otherwise omit
+COPY data/processed/ ./data/processed/
+# Copy processed data if it's not pulled via DVC inside the container
 
 # Expose the port and run the app
 EXPOSE 8000

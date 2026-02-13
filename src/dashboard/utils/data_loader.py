@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Define the base path to the data directory
 # Using Path.home() to resolve the '~' correctly
-DATA_PATH = os.path.join(Path.home(), "Code/data/desercionAR")
+DATA_PATH = "data/processed"
 PREDICT_DATA_PATH = os.path.join(DATA_PATH, "predict.csv")
 TRAIN_DATA_PATH = os.path.join(DATA_PATH, "train.csv")
 
